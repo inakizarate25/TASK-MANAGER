@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -13,50 +13,58 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     try {
       const res = await API.post("/auth/register", form);
       localStorage.setItem("token", res.data.token);
-      navigate("/"); // redirige a tareas
+      toast.success("Registro exitoso 🎉");
+      navigate("/");
     } catch (err) {
-      setError(err.response?.data?.msg || "Error al registrarse");
+      toast.error(err.response?.data?.msg || "Error al registrarse");
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Registrarse</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <button type="submit">Crear cuenta</button>
-      </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
+        <h2 className="text-2xl font-semibold text-center mb-6">
+          Crear cuenta
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="name"
+            placeholder="Nombre"
+            value={form.name}
+            onChange={handleChange}
+            className="w-full p-3 border rounded"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full p-3 border rounded"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full p-3 border rounded"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition"
+          >
+            Registrarse
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

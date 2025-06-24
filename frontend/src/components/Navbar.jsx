@@ -11,31 +11,30 @@ const Navbar = () => {
   };
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 20px",
-        backgroundColor: "#f0f0f0",
-      }}
-    >
-      <h3 style={{ margin: 0 }}>Gestor de Tareas</h3>
+    <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+      <h1 className="text-lg font-bold text-blue-700">Gestor de Tareas</h1>
 
-      <div>
+      <div className="flex gap-4 items-center">
         {token ? (
           <>
-            <Link to="/" style={{ marginRight: "15px" }}>
+            <Link to="/" className="text-blue-600 hover:underline">
               Inicio
             </Link>
-            <button onClick={handleLogout}>Cerrar sesión</button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+            >
+              Cerrar sesión
+            </button>
           </>
         ) : (
           <>
-            <Link to="/login" style={{ marginRight: "15px" }}>
+            <Link to="/login" className="text-blue-600 hover:underline">
               Iniciar sesión
             </Link>
-            <Link to="/register">Registrarse</Link>
+            <Link to="/register" className="text-blue-600 hover:underline">
+              Registrarse
+            </Link>
           </>
         )}
       </div>

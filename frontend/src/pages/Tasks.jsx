@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({ title: "", description: "" });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const fetchTasks = async () => {
@@ -16,7 +16,7 @@ const Tasks = () => {
       if (err.response?.status === 401) {
         navigate("/login");
       } else {
-        setError("Error al obtener tareas");
+        toast.error("Error al obtener tareas");
       }
     }
   };
@@ -27,8 +27,9 @@ const Tasks = () => {
       await API.post("/tasks", newTask);
       setNewTask({ title: "", description: "" });
       fetchTasks();
+      toast.success("Tarea creada ✅");
     } catch {
-      setError("Error al crear tarea");
+      toast.error("Error al crear tarea");
     }
   };
 
@@ -36,8 +37,9 @@ const Tasks = () => {
     try {
       await API.delete(`/tasks/${id}`);
       fetchTasks();
+      toast.info("Tarea eliminada");
     } catch {
-      setError("Error al eliminar tarea");
+      toast.error("Error al eliminar tarea");
     }
   };
 
@@ -46,7 +48,7 @@ const Tasks = () => {
       await API.put(`/tasks/${id}`, { status: newStatus });
       fetchTasks();
     } catch {
-      setError("Error al actualizar tarea");
+      toast.error("Error al actualizar tarea");
     }
   };
 
@@ -57,62 +59,65 @@ const Tasks = () => {
   const statusOptions = ["pendiente", "en progreso", "completada"];
 
   return (
-    <div style={{ maxWidth: "600px", margin: "40px auto" }}>
-      <h2>Mis Tareas</h2>
-
-      <form onSubmit={handleAddTask}>
-        <input
-          type="text"
-          placeholder="Título"
-          value={newTask.title}
-          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-          required
-        />
-        <br />
-        <textarea
-          placeholder="Descripción"
-          value={newTask.description}
-          onChange={(e) =>
-            setNewTask({ ...newTask, description: e.target.value })
-          }
-        />
-        <br />
-        <button type="submit">Agregar Tarea</button>
-      </form>
-
-      <hr />
-
-      {tasks.map((task) => (
-        <div
-          key={task._id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            margin: "10px 0",
-          }}
-        >
-          <h4>{task.title}</h4>
-          <p>{task.description}</p>
-          <select
-            value={task.status}
-            onChange={(e) => handleUpdateStatus(task._id, e.target.value)}
-          >
-            {statusOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+    <div className="min-h-screen bg-gray-100 px-4 py-8">
+      <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h2 className="text-xl font-bold mb-4">Mis Tareas</h2>
+        <form onSubmit={handleAddTask} className="space-y-3 mb-6">
+          <input
+            type="text"
+            placeholder="Título"
+            value={newTask.title}
+            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            className="w-full p-2 border rounded"
+            required
+          />
+          <textarea
+            placeholder="Descripción"
+            value={newTask.description}
+            onChange={(e) =>
+              setNewTask({ ...newTask, description: e.target.value })
+            }
+            className="w-full p-2 border rounded"
+          />
           <button
-            onClick={() => handleDeleteTask(task._id)}
-            style={{ marginLeft: "10px" }}
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
           >
-            Eliminar
+            Agregar Tarea
           </button>
-        </div>
-      ))}
+        </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        <div className="space-y-4">
+          {tasks.map((task) => (
+            <div
+              key={task._id}
+              className="bg-gray-50 border p-4 rounded shadow-sm"
+            >
+              <h4 className="font-semibold">{task.title}</h4>
+              <p className="text-sm">{task.description}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <select
+                  value={task.status}
+                  onChange={(e) => handleUpdateStatus(task._id, e.target.value)}
+                  className="p-1 border rounded"
+                >
+                  {statusOptions.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => handleDeleteTask(task._id)}
+                  className="text-red-600 hover:underline ml-auto"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
